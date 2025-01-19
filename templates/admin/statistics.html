@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+{% block title %}超市统计信息{% endblock %}
+{% block content %}
+<h1>生鲜超市统计信息</h1>
+
+<!-- 销售额折线图 -->
+<div id="daily-sales" style="width: 100%; height: 400px;"></div>
+
+<!-- 热销商品柱状图 -->
+<div id="hot-products" style="width: 100%; height: 400px;"></div>
+
+<!-- 热销分类柱状图图 -->
+<div id="hot-categories" style="width: 100%; height: 400px;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script>
+    // 从后端传递的上下文数据
+    const dailySales = {{ daily_sales|safe }};
+    const hotProducts = {{ hot_products|safe }};
+    const hotCategories = {{ hot_categories|safe }};
+
+    // 1. 每日销售额折线图
+    const dailySalesChart = echarts.init(document.getElementById('daily-sales'));
+    dailySalesChart.setOption({
+        title: { text: '每日销售额' },
+        xAxis: { type: 'category', data: dailySales.map(item => item.day) },
+        yAxis: { type: 'value' },
+        series: [
+            {
+                data: dailySales.map(item => item.total_sales),
+                type: 'line',
+            },
+        ],
+    });
+
+    // 2. 热销商品柱状图
+    const hotProductsChart = echarts.init(document.getElementById('hot-products'));
+    hotProductsChart.setOption({
+        title: { text: '热销商品' },
+        xAxis: { type: 'category', data: hotProducts.map(item => item.goods__gtitle) },
+        yAxis: { type: 'value' },
+        series: [
+            {
+                data: hotProducts.map(item => item.total_count),
+                type: 'bar',
+            },
+        ],
+    });
+
+    // 3. 热销分类饼图
+    const hotCategoriesChart = echarts.init(document.getElementById('hot-categories'));
+    hotCategoriesChart.setOption({
+        title: { text: '热销分类' },
+        xAxis: { type: 'category', data: hotCategories.map(item => item.goods__gtype__ttitle) },
+        yAxis: { type: 'value' },
+        series: [
+            {
+                data: hotCategories.map(item => item.total_sales),
+                type: 'bar',
+            },
+        ],
+<!--        series: [-->
+<!--            {-->
+<!--                type: 'bar',-->
+<!--                data: hotCategories.map(item => ({-->
+<!--                    value: item.total_sales,-->
+<!--                    name: item.goods__gtype__ttitle,-->
+<!--                })),-->
+<!--            },-->
+<!--        ],-->
+    });
+</script>
+{% endblock %}

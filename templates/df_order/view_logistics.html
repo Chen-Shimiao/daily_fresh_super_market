@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f9f9f9;
+        color: #333;
+    }
+
+    h1 {
+        color: #4CAF50;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .logistics-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .logistics-container p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin: 8px 0;
+    }
+
+    .logistics-container p span {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .logistics-container a {
+        display: inline-block;
+        margin-top: 15px;
+        text-decoration: none;
+        color: #fff;
+        background-color: #4CAF50;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .logistics-container a:hover {
+        background-color: #45a049;
+    }
+
+    .logistics-empty {
+        text-align: center;
+        font-style: italic;
+        color: #999;
+    }
+</style>
+
+<script>
+    $(function () {
+        $('.col07').each(function () {
+            count = $(this).prev().text();
+            price = $(this).prev().prev().text();
+            $(this).html(parseFloat(count, 2) * parseFloat(price, 2) + '元');
+        });
+    });
+</script>
+{% endblock %}
+
+{% block center_body %}
+
+<h1>物流详情</h1>
+
+<div class="logistics-container">
+    {% if logistics %}
+        <p><span>订单号:</span> {{ order.id }}</p>
+        <p><span>物流单号:</span> {{ logistics.tracking_number }}</p>
+        <p><span>当前状态:</span> {{ logistics.current_status }}</p>
+        <p><span>最后更新:</span> {{ logistics.last_updated }}</p>
+        <p><span>预计送达日期:</span> {{ logistics.estimated_delivery_date }}</p>
+    {% else %}
+        <p class="logistics-empty">此订单尚无物流信息。</p>
+    {% endif %}
+
+    <a href="{% url "df_user:order" 1 %}">返回订单列表</a>
+</div>
+
+{% endblock center_body %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    .after-sale-detail-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .detail-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .detail-content {
+        margin: 10px 0;
+    }
+    .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .detail-table th, .detail-table td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    .detail-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        color: #555;
+    }
+    .image-container img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .btn-return {
+        display: inline-block;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: #007bff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-return:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}
+{% block center_body %}
+<div class="after-sale-detail-container">
+    <h1 class="detail-title">售后申请详情</h1>
+    <div class="detail-content">
+        <table class="detail-table">
+            <tr>
+                <th>订单号</th>
+                <td>{{ after_sale_request.order.oid }}</td>
+            </tr>
+            <tr>
+                <th>商品名称</th>
+                <td>{{ after_sale_request.order_item.goods.gtitle }}</td>
+            </tr>
+            <tr>
+                <th>申请类型</th>
+                <td>{{ after_sale_request.get_request_type_display }}</td>
+            </tr>
+            <tr>
+                <th>问题描述</th>
+                <td>{{ after_sale_request.description }}</td>
+            </tr>
+            <tr>
+                <th>当前状态</th>
+                <td>{{ after_sale_request.get_status_display }}</td>
+            </tr>
+            <tr>
+                <th>申请时间</th>
+                <td>{{ after_sale_request.created_at }}</td>
+            </tr>
+            {% if after_sale_request.images %}
+            <tr>
+                <th>问题图片</th>
+                <td>
+                    <div class="image-container">
+                        <img src="{{ after_sale_request.images.url }}" alt="问题图片">
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+        <div class="button-container">
+            <a href="/order/after_sale_list" class="btn-return">返回售后列表</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

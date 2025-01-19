@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时聊天</title>
+    <style>
+        #chat-log {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        #chat-input {
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>实时聊天</h1>
+    <div id="chat-log"></div>
+    <input id="chat-input" type="text" placeholder="输入消息..." autocomplete="off">
+    <button onclick="sendMessage()">发送</button>
+
+    <script>
+        const chatLog = document.getElementById("chat-log");
+        const chatInput = document.getElementById("chat-input");
+
+        // 创建 WebSocket 连接
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+        // 连接成功时的事件
+        socket.onopen = function() {
+            console.log('WebSocket connected');
+        };
+
+        // 接收到消息时的事件
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            chatLog.innerHTML += "<p>" + data.message + "</p>";
+            chatLog.scrollTop = chatLog.scrollHeight;  // 滚动到底部
+        };
+
+        // 连接关闭时的事件
+        socket.onclose = function(e) {
+            console.log('WebSocket closed', e);
+        };
+
+        // 发送消息
+        function sendMessage() {
+            const message = chatInput.value;
+            socket.send(JSON.stringify({
+                'message': message
+            }));
+            chatInput.value = '';  // 清空输入框
+        }
+    </script>
+</body>
+</html>

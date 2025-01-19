@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    /* 外部容器 */
+    .after-sale-form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 标题样式 */
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* 表单组 */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+        box-sizing: border-box;
+        background-color: #fff;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        border-color: #007bff;
+    }
+
+    .form-group .hint-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    /* 提交按钮 */
+    .btn-submit {
+        display: block;
+        width: 100%;
+        padding: 12px 0;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-submit:hover {
+        background-color: #0056b3;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .after-sale-form-container {
+            padding: 15px;
+        }
+        .title {
+            font-size: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block center_body %}
+<div class="after-sale-form-container">
+    <h1 class="title">申请售后</h1>
+    <form method="post" enctype="multipart/form-data" class="after-sale-form">
+        {% csrf_token %}
+
+        <!-- 售后类型 -->
+        <div class="form-group">
+            <label for="request_type">售后类型：</label>
+            {{ form.request_type }}
+        </div>
+
+        <!-- 问题描述 -->
+        <div class="form-group">
+            <label for="description">问题描述：</label>
+            {{ form.description }}
+            <p class="hint-text">请简要描述问题，例如“商品有损坏”或“数量不符”。</p>
+        </div>
+
+        <!-- 问题图片 -->
+        <div class="form-group">
+            <label for="images">问题图片：</label>
+            {{ form.images }}
+            <p class="hint-text">上传问题相关的图片（如损坏商品的照片），支持 JPG/PNG 格式。</p>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div class="form-group">
+            <button type="submit" class="btn-submit">提交申请</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
