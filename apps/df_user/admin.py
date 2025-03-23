@@ -1,9 +1,12 @@
+from datetime import timedelta
+
 from django.contrib import admin
 from django.urls import path
+from django.utils import timezone
 
 from df_cart.models import CartInfo
 from df_goods.models import GoodsInfo, TypeInfo
-from df_order.models import OrderInfo, OrderDetailInfo, Logistics
+from df_order.models import OrderInfo, OrderDetailInfo, Logistics, AfterSaleRequest
 from .models import UserInfo, GoodsBrowser
 from django.contrib import admin
 from django.urls import path
@@ -85,13 +88,26 @@ class CustomAdminSite(admin.AdminSite):
         )
         daily_sales = [{'day': item['day'].strftime('%m-%d'), 'total_sales': float(item['total_sales'] or 0)} for
                       item in daily_sales]
+        today = timezone.now().date()
+        three_months_ago = today - timedelta(days=90)
+
+        # Query AfterSaleRequest objects created in the last three months
+        after_sales_data = AfterSaleRequest.objects.filter(
+            created_at__gte=three_months_ago
+        ).values('created_at__date').annotate(request_count=Count('id')).order_by('created_at__date')
+        daily_after_sales_request = [{'day': item['created_at__date'].strftime('%m-%d'), 'request_count': float(item['request_count'] or 0)} for
+                       item in after_sales_data]
         hot_products = (
             OrderDetailInfo.objects.filter(order__oIsPay=True)
             .values('goods__gtitle')
             .annotate(total_count=Sum('count'))
             .order_by('-total_count')[:10]
         )
-
+        hot_browser=(
+            GoodsBrowser.objects.values('good__id','good__gtitle')
+            .annotate(browser_count=Count('good'))
+            .order_by('-browser_count')
+        )
         hot_categories = (
             OrderDetailInfo.objects.filter(order__oIsPay=True)
             .values('goods__gtype__ttitle')
@@ -107,6 +123,8 @@ class CustomAdminSite(admin.AdminSite):
             'daily_sales': list(daily_sales),
             'hot_products': list(hot_products),
             'hot_categories': list(hot_categories),
+            'hot_browser':list(hot_browser),
+            'daily_after_sales_request':list(daily_after_sales_request),
         }
         return render(request, 'admin/statistics.html', context)
 
